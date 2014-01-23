@@ -1,9 +1,9 @@
 #ifndef BYTEBUFFER_HPP
 #define BYTEBUFFER_HPP
 
+#include <SourceQuery/Config.hpp>
 #include <string>
 #include <vector>
-#include <stdint.h>
 
 class ByteBuffer
 {
