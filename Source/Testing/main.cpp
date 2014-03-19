@@ -18,6 +18,8 @@ int main( int, char ** )
 */
 	SourceQuery_Initialize( );
 
+	SourceQuery_SetTimeout( 5000 );
+
 	SQ_INFO info;
 	SourceQuery_GetInfo( "88.191.102.162:27015", info );
 
