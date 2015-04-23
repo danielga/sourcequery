@@ -1,5 +1,5 @@
-#include <SourceQuery/MasterQuery.hpp>
-#include <SourceQuery/ByteBuffer.hpp>
+#include <sourcequery/masterquery.hpp>
+#include <sourcequery/bytebuffer.hpp>
 #include <sstream>
 
 #if defined _WIN32

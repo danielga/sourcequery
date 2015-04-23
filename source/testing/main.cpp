@@ -1,5 +1,5 @@
-#include <SourceQuery/SourceQuery.hpp>
-#include <SourceQuery/MasterQuery.hpp>
+#include <sourcequery/sourcequery.hpp>
+#include <sourcequery/masterquery.hpp>
 
 int main( int, char ** )
 {
@@ -21,9 +21,9 @@ int main( int, char ** )
 	SourceQuery_SetTimeout( 5000 );
 
 	SQ_INFO info;
-	SourceQuery_GetInfo( "88.191.102.162:27015", info );
+	SourceQuery_GetInfo( "89.180.64.76:27015", info );
 
-	uint32_t ping = SourceQuery_Ping( "88.191.102.162:27015" );
+	uint32_t ping = SourceQuery_Ping( "89.180.64.76:27015" );
 
 	SourceQuery_Shutdown( );
 

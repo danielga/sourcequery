@@ -1,4 +1,4 @@
-#include "ByteBuffer.hpp"
+#include <sourcequery/bytebuffer.hpp>
 #include <stdexcept>
 #include <cassert>
 #include <cstring>

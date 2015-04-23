@@ -1,7 +1,6 @@
-#ifndef SOURCEQUERY_HPP
-#define SOURCEQUERY_HPP
+#pragma once
 
-#include <SourceQuery/Config.hpp>
+#include <sourcequery/config.hpp>
 #include <string>
 #include <vector>
 
@@ -70,5 +69,3 @@ SOURCEQUERY_API uint32_t SourceQuery_Ping( const std::string &address );
 SOURCEQUERY_API bool SourceQuery_GetInfo( const std::string &address, SQ_INFO &info );
 SOURCEQUERY_API bool SourceQuery_GetRules( const std::string &address, SQ_RULES &rules );
 SOURCEQUERY_API bool SourceQuery_GetPlayers( const std::string &address, SQ_PLAYERS &players );
-
-#endif // SOURCEQUERY_HPP

@@ -1,7 +1,6 @@
-#ifndef BYTEBUFFER_HPP
-#define BYTEBUFFER_HPP
+#pragma once
 
-#include <SourceQuery/Config.hpp>
+#include <sourcequery/config.hpp>
 #include <string>
 #include <vector>
 
@@ -86,5 +85,3 @@ private:
 	std::vector<uint8_t> buffer_internal;
 	size_t buffer_offset;
 };
-
-#endif // BYTEBUFFER_HPP

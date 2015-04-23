@@ -1,7 +1,6 @@
-#ifndef MASTERQUERY_HPP
-#define MASTERQUERY_HPP
+#pragma once
 
-#include <SourceQuery/Config.hpp>
+#include <sourcequery/config.hpp>
 #include <string>
 #include <vector>
 
@@ -55,5 +54,3 @@ SOURCEQUERY_API bool MasterQuery_Shutdown( );
 SOURCEQUERY_API bool MasterQuery_SetTimeout( int32_t timeout );
 SOURCEQUERY_API SQ_SERVERS MasterQuery_GetServers( );
 SOURCEQUERY_API SQ_SERVERS MasterQuery_GetServerList( const std::string &address, SQ_SERVER_REGION region, const SQ_FILTER_PROPERTIES &properties );
-
-#endif // MASTERQUERY_HPP

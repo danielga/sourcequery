@@ -1,7 +1,7 @@
-#include <SourceQuery/SourceQuery.hpp>
-#include <SourceQuery/ByteBuffer.hpp>
+#include <sourcequery/sourcequery.hpp>
+#include <sourcequery/bytebuffer.hpp>
 #include <sstream>
-#include "bzlib.h"
+#include <bzlib.h>
 
 #if defined _WIN32
 

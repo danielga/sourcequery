@@ -1,5 +1,4 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#pragma once
 
 #include <stdint.h>
 
@@ -18,5 +17,3 @@
 		#define SOURCEQUERY_API __attribute__( ( __visibility__( "default" ) ) )
 	#endif
 #endif
-
-#endif // CONFIG_HPP
