@@ -92,12 +92,12 @@ bool ByteBuffer::EndOfFile( ) const
 
 uint8_t *ByteBuffer::GetBuffer( )
 {
-	return &buffer_internal[0];
+	return buffer_internal.data( );
 }
 
 const uint8_t *ByteBuffer::GetBuffer( ) const
 {
-	return &buffer_internal[0];
+	return buffer_internal.data( );
 }
 
 void ByteBuffer::Clear( )

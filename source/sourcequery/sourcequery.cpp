@@ -172,6 +172,7 @@ static ByteBuffer ReceivePacket( SOCKET socket )
 				break;
 
 			recv_buffer.Resize( bytes_received );
+			recv_buffer.Seek( 0 );
 			++received;
 		}
 		while( received < numpackets );
