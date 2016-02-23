@@ -9,6 +9,8 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+typedef SOCKET socket_t;
+
 static WSADATA source_wsa_data;
 
 #elif defined __APPLE__ || defined __linux
@@ -16,16 +18,16 @@ static WSADATA source_wsa_data;
 #include <sys/socket.h>
 #include <sys/time.h>
 
-#define SOCKET_ERROR ( -1 )
-#define INVALID_SOCKET SOCKET_ERROR
-#define SOCKET int
+typedef int socket_t;
 
 #else
+
 #error COMPILER NOT RECOGNIZED!
+
 #endif
 
-static SOCKET socketgs = INVALID_SOCKET;
-static SOCKET socketrcon = INVALID_SOCKET;
+static socket_t socketgs = static_cast<socket_t>( -1 );
+static socket_t socketrcon = static_cast<socket_t>( -1 );
 
 static bool source_is_initialized = false;
 
@@ -130,7 +132,7 @@ static uint32_t CRC32( const void *buf, size_t size )
 	return crc ^ 0xffffffff;
 }
 
-static ByteBuffer ReceivePacket( SOCKET socket )
+static ByteBuffer ReceivePacket( socket_t socket )
 {
 	int bytes_received;
 	ByteBuffer recv_buffer;
@@ -325,7 +327,7 @@ bool SourceQuery_Initialize( )
 		return false;
 #endif
 
-	if( ( socketgs = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
+	if( ( socketgs = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == -1 )
 		return false;
 
 	source_is_initialized = true;
@@ -337,7 +339,7 @@ bool SourceQuery_Shutdown( )
 	if( !source_is_initialized )
 		return false;
 
-	if( socketgs != INVALID_SOCKET && closesocket( socketgs ) != 0 )
+	if( socketgs != -1 && closesocket( socketgs ) != 0 )
 		return false;
 
 #if _WIN32
@@ -354,10 +356,10 @@ bool SourceQuery_SetTimeout( int32_t timeout )
 	if( !source_is_initialized )
 		return false;
 
-	if( setsockopt( socketgs, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == SOCKET_ERROR )
+	if( setsockopt( socketgs, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == -1 )
 		return false;
 
-	if( setsockopt( socketgs, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == SOCKET_ERROR )
+	if( setsockopt( socketgs, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == -1 )
 		return false;
 
 	return true;
@@ -372,7 +374,7 @@ uint32_t SourceQuery_Ping( const std::string &address )
 	if( !GetAddressFromString( address, socketaddress ) )
 		return static_cast<uint32_t>( -1 );
 
-	if( sendto( socketgs, A2S_INFO_REQUEST, A2S_INFO_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+	if( sendto( socketgs, A2S_INFO_REQUEST, A2S_INFO_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 		return static_cast<uint32_t>( -1 );
 
 	StartStopwatch( );
@@ -389,7 +391,7 @@ bool SourceQuery_GetInfo( const std::string &address, SQ_INFO &info )
 	if( !GetAddressFromString( address, socketaddress ) )
 		return false;
 
-	if( sendto( socketgs, A2S_INFO_REQUEST, A2S_INFO_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+	if( sendto( socketgs, A2S_INFO_REQUEST, A2S_INFO_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 		return false;
 
 	ByteBuffer recv_buffer = ReceivePacket( socketgs );
@@ -449,7 +451,7 @@ bool SourceQuery_GetRules( const std::string &address, SQ_RULES &rules )
 	if( !GetAddressFromString( address, socketaddress ) )
 		return false;
 
-	if( sendto( socketgs, A2S_RULES_REQUEST A2S_CHALLENGE, A2S_RULES_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+	if( sendto( socketgs, A2S_RULES_REQUEST A2S_CHALLENGE, A2S_RULES_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 		return false;
 
 	ByteBuffer recv_buffer = ReceivePacket( socketgs );
@@ -468,7 +470,7 @@ bool SourceQuery_GetRules( const std::string &address, SQ_RULES &rules )
 		recv_buffer.Resize( 0 );
 		recv_buffer.Seek( 0 );
 		recv_buffer << A2S_HEADER << A2S_RULES << code;
-		if( sendto( socketgs, reinterpret_cast<const char *>( recv_buffer.GetBuffer( ) ), A2S_RULES_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+		if( sendto( socketgs, reinterpret_cast<const char *>( recv_buffer.GetBuffer( ) ), A2S_RULES_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 			return false;
 
 		recv_buffer = ReceivePacket( socketgs );
@@ -501,7 +503,7 @@ bool SourceQuery_GetPlayers( const std::string &address, SQ_PLAYERS &players )
 	if( !GetAddressFromString( address, socketaddress ) )
 		return false;
 
-	if( sendto( socketgs, A2S_PLAYER_REQUEST A2S_CHALLENGE, A2S_PLAYER_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+	if( sendto( socketgs, A2S_PLAYER_REQUEST A2S_CHALLENGE, A2S_PLAYER_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 		return false;
 
 	ByteBuffer recv_buffer = ReceivePacket( socketgs );
@@ -520,7 +522,7 @@ bool SourceQuery_GetPlayers( const std::string &address, SQ_PLAYERS &players )
 		recv_buffer.Resize( 0 );
 		recv_buffer.Seek( 0 );
 		recv_buffer << A2S_HEADER << A2S_PLAYER << code;
-		if( sendto( socketgs, reinterpret_cast<const char *>( recv_buffer.GetBuffer( ) ), A2S_PLAYER_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+		if( sendto( socketgs, reinterpret_cast<const char *>( recv_buffer.GetBuffer( ) ), A2S_PLAYER_LENGTH, 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 			return false;
 
 		recv_buffer = ReceivePacket( socketgs );

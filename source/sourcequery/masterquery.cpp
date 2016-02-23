@@ -8,7 +8,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#define snprintf _snprintf
+typedef SOCKET socket_t;
 
 static WSADATA master_wsa_data;
 
@@ -16,15 +16,15 @@ static WSADATA master_wsa_data;
 
 #include <sys/socket.h>
 
-#define SOCKET_ERROR ( -1 )
-#define INVALID_SOCKET SOCKET_ERROR
-#define SOCKET int
+typedef int socket_t;
 
 #else
+
 #error COMPILER NOT RECOGNIZED!
+
 #endif
 
-static SOCKET socketms = INVALID_SOCKET;
+static socket_t socketms = static_cast<socket_t>( -1 );
 
 static bool master_is_initialized = false;
 
@@ -87,7 +87,7 @@ bool MasterQuery_Initialize( )
 		return false;
 #endif
 
-	if( ( socketms = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET )
+	if( ( socketms = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == -1 )
 		return false;
 
 	master_is_initialized = true;
@@ -99,7 +99,7 @@ bool MasterQuery_Shutdown( )
 	if( !master_is_initialized )
 		return false;
 
-	if( socketms != INVALID_SOCKET && closesocket( socketms ) != 0 )
+	if( socketms != -1 && closesocket( socketms ) != 0 )
 		return false;
 
 #if _WIN32
@@ -116,10 +116,10 @@ bool MasterQuery_SetTimeout( int32_t timeout )
 	if( !master_is_initialized )
 		return false;
 
-	if( setsockopt( socketms, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == SOCKET_ERROR )
+	if( setsockopt( socketms, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == -1 )
 		return false;
 
-	if( setsockopt( socketms, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == SOCKET_ERROR )
+	if( setsockopt( socketms, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<const char *>( &timeout ), 4 ) == -1 )
 		return false;
 
 	return true;
@@ -163,9 +163,7 @@ static std::string Internal_CreateFilter( const SQ_FILTER_PROPERTIES &p )
 	if( p.nappid != 0 )
 	{
 		filter += "\\nappid\\";
-		char t[20] = { 0 };
-		snprintf( t, 20, "%i",  p.nappid );
-		filter += t;
+		filter += std::to_string( p.nappid );
 	}
 
 	if( p.noplayers )
@@ -273,7 +271,7 @@ SQ_SERVERS MasterQuery_GetServerList( const std::string &address, SQ_SERVER_REGI
 		send_buffer.Seek( 2 );
 		send_buffer << last_address << filter;
 
-		if( sendto( socketms, reinterpret_cast<const char *>( send_buffer.GetBuffer( ) ), static_cast<int>( send_buffer.Size( ) ), 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == SOCKET_ERROR )
+		if( sendto( socketms, reinterpret_cast<const char *>( send_buffer.GetBuffer( ) ), static_cast<int>( send_buffer.Size( ) ), 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
 			break;
 
 		recv_buffer.Resize( 1500 );
