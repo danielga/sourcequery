@@ -9,7 +9,7 @@ int main( int, char ** )
 	208.64.200.39
 	*/
 
-	MasterQuery_Initialize( );
+	/*MasterQuery_Initialize( );
 
 	MasterQuery_SetTimeout( 3000 );
 
@@ -19,10 +19,9 @@ int main( int, char ** )
 	SQ_SERVERS masterservers = MasterQuery_GetServers( );
 	SQ_SERVERS servers = MasterQuery_GetServerList( "208.64.200.65:27011", REGION_WORLD, filters );
 
-	MasterQuery_Shutdown( );
+	MasterQuery_Shutdown( );*/
 
-	/*
-	const char server_address[] = "185.38.151.206:27015";
+	const char server_address[] = "195.154.166.219:27015";
 
 	SourceQuery_Initialize( );
 
@@ -40,6 +39,6 @@ int main( int, char ** )
 	SourceQuery_GetRules( server_address, rules );
 
 	SourceQuery_Shutdown( );
-	*/
+
 	return 0;
 }
