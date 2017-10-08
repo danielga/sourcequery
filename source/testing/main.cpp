@@ -3,31 +3,30 @@
 
 int main( int, char ** )
 {
-	/*
-	208.64.200.65
-	208.64.200.52
-	208.64.200.39
-	*/
-
-	/*MasterQuery_Initialize( );
+	MasterQuery_Initialize( );
 
 	MasterQuery_SetTimeout( 3000 );
 
 	SQ_FILTER_PROPERTIES filters;
 	filters.gamedir = "garrysmod";
+	filters.map = "gm_construct";
+	filters.dedicated = true;
+	filters.noplayers = true;
+	filters.secure = true;
 
 	SQ_SERVERS masterservers = MasterQuery_GetServers( );
-	SQ_SERVERS servers = MasterQuery_GetServerList( "208.64.200.65:27011", REGION_WORLD, filters );
+	SQ_SERVERS servers = MasterQuery_GetServerList( "hl2master.steampowered.com:27011", REGION_WORLD, filters );
 
-	MasterQuery_Shutdown( );*/
+	MasterQuery_Shutdown( );
 
-	const char server_address[] = "195.154.166.219:27015";
+	const char server_address[] = "g1.metastruct.net:27015";
 
 	SourceQuery_Initialize( );
 
-	SourceQuery_SetTimeout( 5000 );
+	SourceQuery_SetTimeout( 3000 );
 
 	uint32_t ping = SourceQuery_Ping( server_address );
+	(void)ping;
 
 	SQ_INFO info;
 	SourceQuery_GetInfo( server_address, info );

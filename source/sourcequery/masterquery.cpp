@@ -12,9 +12,20 @@ typedef SOCKET socket_t;
 
 static WSADATA master_wsa_data;
 
+inline int close( SOCKET s )
+{
+	return closesocket( s );
+}
+
 #elif defined __APPLE__ || defined __linux
 
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <cstring>
 
 typedef int socket_t;
 
@@ -99,7 +110,7 @@ bool MasterQuery_Shutdown( )
 	if( !master_is_initialized )
 		return false;
 
-	if( socketms != -1 && closesocket( socketms ) != 0 )
+	if( socketms != -1 && close( socketms ) != 0 )
 		return false;
 
 #if _WIN32
@@ -271,7 +282,7 @@ SQ_SERVERS MasterQuery_GetServerList( const std::string &address, SQ_SERVER_REGI
 		send_buffer.Seek( 2 );
 		send_buffer << last_address << filter;
 
-		if( sendto( socketms, reinterpret_cast<const char *>( send_buffer.GetBuffer( ) ), static_cast<int>( send_buffer.Size( ) ), 0, reinterpret_cast<const sockaddr *>( &socketaddress ), sizeof( socketaddress ) ) == -1 )
+		if( sendto( socketms, reinterpret_cast<const char *>( send_buffer.GetBuffer( ) ), static_cast<int>( send_buffer.Size( ) ), 0, reinterpret_cast<const sockaddr *>( &socketaddress ), static_cast<int>( sizeof( socketaddress ) ) ) == -1 )
 			break;
 
 		recv_buffer.Resize( 1500 );

@@ -115,6 +115,9 @@ void ByteBuffer::Reserve( size_t capacity )
 void ByteBuffer::Resize( size_t size )
 {
 	buffer_internal.resize( size );
+
+	if( size < buffer_offset )
+		buffer_offset = size != 0 ? size - 1 : 0;
 }
 
 void ByteBuffer::ShrinkToFit( )

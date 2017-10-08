@@ -101,6 +101,7 @@ int bz_config_ok ( void )
 static
 void* default_bzalloc ( void* opaque, Int32 items, Int32 size )
 {
+   (void)opaque;
    void* v = malloc ( items * size );
    return v;
 }
@@ -108,6 +109,7 @@ void* default_bzalloc ( void* opaque, Int32 items, Int32 size )
 static
 void default_bzfree ( void* opaque, void* addr )
 {
+   (void)opaque;
    if (addr != NULL) free ( addr );
 }
 
@@ -561,7 +563,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
             return True;
    
          s->state_out_len = 1;
-         s->state_out_ch = s->k0;
+         s->state_out_ch = (UChar)s->k0;
          BZ_GET_FAST(k1); BZ_RAND_UPD_MASK; 
          k1 ^= BZ_RAND_MASK; s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
@@ -637,7 +639,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
          if (c_nblock_used == s_save_nblockPP) {
             c_state_out_len = 0; goto return_notr;
          };   
-         c_state_out_ch = c_k0;
+         c_state_out_ch = (UChar)c_k0;
          BZ_GET_FAST_C(k1); c_nblock_used++;
          if (k1 != c_k0) { 
             c_k0 = k1; goto s_state_out_len_eq_one; 
@@ -705,7 +707,8 @@ __inline__ Int32 BZ2_indexIntoF ( Int32 indx, Int32 *cftab )
 static
 Bool unRLE_obuf_to_output_SMALL ( DState* s )
 {
-   UChar k1;
+   /* WARNING: k1 was changed from a UChar to Int32 */
+   Int32 k1;
 
    if (s->blockRandomised) {
 
@@ -731,7 +734,7 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
             return True;
    
          s->state_out_len = 1;
-         s->state_out_ch = s->k0;
+         s->state_out_ch = (UChar)s->k0;
          BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
          k1 ^= BZ_RAND_MASK; s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
@@ -780,7 +783,7 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
             return True;
    
          s->state_out_len = 1;
-         s->state_out_ch = s->k0;
+         s->state_out_ch = (UChar)s->k0;
          BZ_GET_SMALL(k1); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
@@ -967,7 +970,8 @@ void BZ_API(BZ2_bzWrite)
                void*   buf, 
                int     len )
 {
-   Int32 n, n2, ret;
+   size_t n, n2;
+   Int32 ret;
    bzFile* bzf = (bzFile*)b;
 
    BZ_SETERR(BZ_OK);
@@ -1027,7 +1031,8 @@ void BZ_API(BZ2_bzWriteClose64)
                     unsigned int* nbytes_out_lo32,
                     unsigned int* nbytes_out_hi32 )
 {
-   Int32   n, n2, ret;
+   size_t  n, n2;
+   Int32   ret;
    bzFile* bzf = (bzFile*)b;
 
    if (bzf == NULL)
@@ -1187,7 +1192,7 @@ int BZ_API(BZ2_bzRead)
          { BZ_SETERR(BZ_IO_ERROR); return 0; };
 
       if (bzf->strm.avail_in == 0 && !myfeof(bzf->handle)) {
-         n = fread ( bzf->buf, sizeof(UChar), 
+         n = (Int32)fread ( bzf->buf, sizeof(UChar), 
                      BZ_MAX_UNUSED, bzf->handle );
          if (ferror(bzf->handle))
             { BZ_SETERR(BZ_IO_ERROR); return 0; };
@@ -1506,6 +1511,7 @@ int BZ_API(BZ2_bzwrite) (BZFILE* b, void* buf, int len )
 int BZ_API(BZ2_bzflush) (BZFILE *b)
 {
    /* do nothing now... */
+   (void)b;
    return 0;
 }
 

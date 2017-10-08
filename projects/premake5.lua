@@ -3,13 +3,13 @@ newoption({
    description = "Force the use of the static C runtime (only works with static builds)"
 })
 
-PROJECT_FOLDER = os.get() .. "/" .. _ACTION
+PROJECT_FOLDER = os.target() .. "/" .. _ACTION
 SOURCE_FOLDER = "../source"
 INCLUDE_FOLDER = "../include"
-THIRDPARTY_FOLDER = "../thirdparty"
 
 solution("sourcequery")
 	language("C++")
+	cppdialect("C++11")
 	location(PROJECT_FOLDER)
 	warnings("Extra")
 	flags("NoPCH")
@@ -30,7 +30,7 @@ solution("sourcequery")
 		objdir(PROJECT_FOLDER .. "/intermediate")
 
 		filter({"configurations:Release", "platforms:x86"})
-			targetdir(PROJECT_FOLDER .. "/release x86")
+			targetdir(PROJECT_FOLDER .. "/release_x86")
 
 		filter({"configurations:Release", "platforms:x64"})
 			targetdir(PROJECT_FOLDER .. "/release x64")
@@ -38,14 +38,14 @@ solution("sourcequery")
 	filter("configurations:Debug")
 		kind("SharedLib")
 		defines("DEBUG")
-		flags("Symbols")
+		symbols("On")
 		objdir(PROJECT_FOLDER .. "/intermediate")
 
 		filter({"configurations:Debug", "platforms:x86"})
-			targetdir(PROJECT_FOLDER .. "/debug x86")
+			targetdir(PROJECT_FOLDER .. "/debug_x86")
 
 		filter({"configurations:Debug", "platforms:x64"})
-			targetdir(PROJECT_FOLDER .. "/debug x64")
+			targetdir(PROJECT_FOLDER .. "/debug_x64")
 
 	filter("configurations:StaticRelease")
 		kind("StaticLib")
@@ -58,25 +58,25 @@ solution("sourcequery")
 			flags("StaticRuntime")
 
 		filter({"configurations:StaticRelease", "platforms:x86"})
-			targetdir(PROJECT_FOLDER .. "/static release x86")
+			targetdir(PROJECT_FOLDER .. "/static_release_x86")
 
 		filter({"configurations:StaticRelease", "platforms:x64"})
-			targetdir(PROJECT_FOLDER .. "/static release x64")
+			targetdir(PROJECT_FOLDER .. "/static_release_x64")
 
 	filter("configurations:StaticDebug")
 		kind("StaticLib")
 		defines({"DEBUG", "SOURCEQUERY_STATIC"})
-		flags("Symbols")
+		symbols("On")
 		objdir(PROJECT_FOLDER .. "/intermediate")
 
 		filter({"configurations:StaticDebug", "options:static-runtime"})
 			flags("StaticRuntime")
 
 		filter({"configurations:StaticDebug", "platforms:x86"})
-			targetdir(PROJECT_FOLDER .. "/static debug x86")
+			targetdir(PROJECT_FOLDER .. "/static_debug_x86")
 
 		filter({"configurations:StaticDebug", "platforms:x64"})
-			targetdir(PROJECT_FOLDER .. "/static debug x64")
+			targetdir(PROJECT_FOLDER .. "/static_debug_x64")
 
 	project("testing")
 		kind("ConsoleApp")
@@ -88,30 +88,31 @@ solution("sourcequery")
 		filter({"system:windows", "configurations:StaticDebug or StaticRelease"})
 			links("ws2_32")
 
-		filter("system:linux")
-			linkoptions("-Wl,-rpath=./")
-
 	project("sourcequery")
 		defines("SOURCEQUERY_EXPORT")
-		includedirs({INCLUDE_FOLDER, SOURCE_FOLDER, THIRDPARTY_FOLDER .. "/bzip2"})
+		includedirs({INCLUDE_FOLDER, SOURCE_FOLDER, SOURCE_FOLDER .. "/bzip2"})
 		vpaths({
 			["Header files/*"] = {
 				SOURCE_FOLDER .. "/sourcequery/**.hpp",
 				INCLUDE_FOLDER .. "/sourcequery/**.hpp",
-				THIRDPARTY_FOLDER .. "/**.h"
+				SOURCE_FOLDER .. "/**.h"
 			},
 			["Source files/*"] = {
 				SOURCE_FOLDER .. "/sourcequery/**.cpp",
-				THIRDPARTY_FOLDER .. "/**.c"
+				SOURCE_FOLDER .. "/**.c"
 			}
 		})
 		files({
 			SOURCE_FOLDER .. "/sourcequery/*.cpp",
 			SOURCE_FOLDER .. "/sourcequery/*.hpp",
-			THIRDPARTY_FOLDER .. "/bzip2/*.c",
-			THIRDPARTY_FOLDER .. "/bzip2/*.h",
+			SOURCE_FOLDER .. "/bzip2/*.c",
+			SOURCE_FOLDER .. "/bzip2/*.h",
 			INCLUDE_FOLDER .. "/sourcequery/*.hpp"
 		})
+
+		filter("system:windows")
+			defines({"_CRT_SECURE_NO_WARNINGS", "_CRT_NONSTDC_NO_WARNINGS"})
+			disablewarnings("4127")
 
 		filter({"system:windows", "configurations:Debug or Release"})
 			links("ws2_32")
