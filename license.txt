@@ -1,7 +1,7 @@
 SourceQuery
 A C++ library for querying Source engine servers and master servers.
 -----------------------------------------------------------------------
-Copyright (c) 2014-2017, Daniel Almeida
+Copyright (c) 2014-2021, Daniel Almeida
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

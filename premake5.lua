@@ -1,11 +1,11 @@
 newoption({
-   trigger = "static-runtime",
-   description = "Force the use of the static C runtime (only works with static builds)"
+	trigger = "static-runtime",
+	description = "Force the use of the static C runtime (only works with static builds)"
 })
 
-PROJECT_FOLDER = os.target() .. "/" .. _ACTION
-SOURCE_FOLDER = "../source"
-INCLUDE_FOLDER = "../include"
+PROJECT_FOLDER = "projects/" .. os.target() .. "/" .. _ACTION
+SOURCE_FOLDER = "source"
+INCLUDE_FOLDER = "include"
 
 solution("sourcequery")
 	language("C++")
@@ -55,7 +55,7 @@ solution("sourcequery")
 		objdir(PROJECT_FOLDER .. "/intermediate")
 
 		filter({"configurations:StaticRelease", "options:static-runtime"})
-			flags("StaticRuntime")
+			staticruntime("On")
 
 		filter({"configurations:StaticRelease", "platforms:x86"})
 			targetdir(PROJECT_FOLDER .. "/static_release_x86")
@@ -70,7 +70,7 @@ solution("sourcequery")
 		objdir(PROJECT_FOLDER .. "/intermediate")
 
 		filter({"configurations:StaticDebug", "options:static-runtime"})
-			flags("StaticRuntime")
+			staticruntime("On")
 
 		filter({"configurations:StaticDebug", "platforms:x86"})
 			targetdir(PROJECT_FOLDER .. "/static_debug_x86")

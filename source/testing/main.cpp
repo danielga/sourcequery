@@ -19,7 +19,8 @@ int main( int, char ** )
 
 	MasterQuery_Shutdown( );
 
-	const char server_address[] = "g1.metastruct.net:27015";
+	//const char server_address[] = "g2.metastruct.net:27018";
+	const char server_address[] = "192.168.1.40:27016";
 
 	SourceQuery_Initialize( );
 
