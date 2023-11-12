@@ -425,8 +425,26 @@ bool SourceQuery_GetInfo( const std::string &address, SQ_INFO &info )
 	int32_t code = 0;
 	char type = 0;
 	recv_buffer >> code >> type;
-	if( code != -1 || type != S2A_INFO )
+	if( code != -1 || ( type != S2C_CHALLENGE && type != S2A_INFO ) )
 		return false;
+
+	if( type == S2C_CHALLENGE )
+	{
+		recv_buffer >> code;
+		recv_buffer.Resize( 0 );
+		recv_buffer.Seek( 0 );
+		recv_buffer << A2S_INFO_REQUEST << code;
+		if( sendto( socketgs, reinterpret_cast<const char *>( recv_buffer.GetBuffer( ) ), recv_buffer.Size( ), 0, reinterpret_cast<const sockaddr*>( &socketaddress ), static_cast<int>( sizeof( socketaddress ) ) ) == -1 )
+			return false;
+
+		recv_buffer = ReceivePacket( socketgs );
+		if( recv_buffer.Size( ) == 0 )
+			return false;
+
+		recv_buffer >> code >> type;
+		if( code != -1 || type != S2A_INFO )
+			return false;
+	}
 
 	uint8_t edf = 0;
 	recv_buffer	>> info.version
